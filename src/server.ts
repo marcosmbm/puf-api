@@ -1,15 +1,18 @@
+import "dotenv/config";
+
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 
-import { router } from "./routes";
-import { errorMiddleware } from "./middlewares/error";
+import { router } from "@/routes";
+import { errorMiddleware } from "@/middlewares/error";
 
 const app = new Koa();
-const port = 3333;
+const port = Number(process.env.PORT);
 
 app.use(errorMiddleware);
 
 app.use(bodyParser());
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 
