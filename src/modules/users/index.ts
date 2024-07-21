@@ -1,7 +1,16 @@
+import { prisma } from "@/data";
+
 import type { Context, Next } from "koa";
 
-export const usersList = (ctx: Context, next: Next) => {
-  ctx.body = "list";
+export const usersList = async (ctx: Context, next: Next) => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  });
+  ctx.body = users;
 };
 
 export const create = (ctx: Context, next: Next) => {
