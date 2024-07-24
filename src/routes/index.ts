@@ -12,8 +12,6 @@ router.get("/", (ctx, next) => {
 
 router.get("/users", users.usersList);
 router.post("/user", users.create);
-router.get("/user/:id", users.find);
-router.put("/user/:id", users.update);
-router.delete("/user/:id", users.remove);
+router.get("/login", users.login);
 
 export { router };
