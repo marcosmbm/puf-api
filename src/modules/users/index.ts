@@ -1,17 +1,13 @@
 import { prisma } from "@/data";
 
 import type { Context, Next } from "koa";
-
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-function generateHashPassword(password: string) {
-  return bcrypt.hashSync(password, Number(process.env.SALT_ROUNDS));
-}
-
-function compareHash(password: string, hash: string) {
-  return bcrypt.compareSync(password, hash);
-}
+import {
+  compareHash,
+  generateHashPassword,
+  getCredentialsByAuthHeader,
+} from "./services";
 
 export const usersList = async (ctx: Context, next: Next) => {
   const users = await prisma.user.findMany({
@@ -56,14 +52,7 @@ export const create = async (ctx: Context, next: Next) => {
 
 export const login = async (ctx: Context, next: Next) => {
   const headerAuthorization = ctx.headers.authorization ?? "";
-  const [type, credentials] = headerAuthorization.split(" ");
-
-  if (type !== "Basic") {
-    throw new Error("Credentials invalid");
-  }
-
-  const decoded = Buffer.from(credentials, "base64").toString();
-  const [email, password] = decoded.split(":");
+  const [email, password] = getCredentialsByAuthHeader(headerAuthorization);
 
   const user = await prisma.user.findFirst({
     where: {
