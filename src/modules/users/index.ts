@@ -1,5 +1,3 @@
-import { prisma } from "@/data";
-
 import type { Context, Next } from "koa";
 import jwt from "jsonwebtoken";
 
@@ -9,8 +7,10 @@ import {
   getCredentialsByAuthHeader,
 } from "./services";
 
+import { register, findFirst, findMany } from "./model";
+
 export const usersList = async (ctx: Context, next: Next) => {
-  const users = await prisma.user.findMany({
+  const users = await findMany({
     select: {
       id: true,
       name: true,
@@ -34,7 +34,7 @@ export const create = async (ctx: Context, next: Next) => {
 
   const hash = generateHashPassword(password);
 
-  const user = await prisma.user.create({
+  const user = await register({
     data: {
       email,
       name,
@@ -54,7 +54,7 @@ export const login = async (ctx: Context, next: Next) => {
   const headerAuthorization = ctx.headers.authorization ?? "";
   const [email, password] = getCredentialsByAuthHeader(headerAuthorization);
 
-  const user = await prisma.user.findFirst({
+  const user = await findFirst({
     where: {
       email: email,
     },
